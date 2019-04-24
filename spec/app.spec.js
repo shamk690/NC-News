@@ -2,7 +2,9 @@ process.env.NODE_ENV = "test";
 
 const { expect } = require("chai");
 const supertest = require("supertest");
-
+const chai = require("chai");
+const chaiSorted = require("chai-sorted");
+chai.use(chaiSorted);
 const app = require("../app");
 const connection = require("../db/connection");
 
@@ -67,12 +69,12 @@ describe("/", () => {
             expect(articles).have.length(12);
             expect(articles[0]).to.eql({
               author: "butter_bridge",
-              title: "Moustache",
-              article_id: 12,
+              title: "Living in the shadow of a great man",
+              article_id: 1,
               topic: "mitch",
-              created_at: "1974-11-26T12:21:54.171Z",
-              votes: 0,
-              comment_count: "0"
+              created_at: "2018-11-15T12:21:54.171Z",
+              votes: 100,
+              comment_count: "13"
             });
           });
       });
@@ -120,7 +122,6 @@ describe("/", () => {
           .get("/api/articles/xyzz")
           .expect(400)
           .then(res => {
-            console.log(res.body);
             expect(res.body.msg).to.eql(
               "Bad Request, invalid input syntax for integer"
             );
@@ -144,9 +145,58 @@ describe("/", () => {
           expect(res.body.articles[0].topic).to.eql("mitch");
         });
     });
+    it("GET status: 200 sorts the articles to date by default", () => {
+      return request
+        .get("/api/articles")
+        .expect(200)
+        .then(res => {
+          console.log("****", res.body.articles);
+          expect(res.body.articles).to.be.descendingBy("created_at");
+        });
+    });
+    it("articles can be sorted by column specified as url sort_by query", () => {
+      return request
+        .get("/api/articles?sort_by=article_id")
+        .expect(200)
+        .then(res => {
+          expect(res.body.articles).to.be.descendingBy("article_id");
+          //expect(res.body.articles).to.be.sortedBy("title");
+          //expect(res.body.articles).to.be.sortedBy("topic");
+        });
+    });
+    it("articles can be sorted by column specified as url sort_by query", () => {
+      return request
+        .get("/api/articles?sort_by=title")
+        .expect(200)
+        .then(res => {
+          expect(res.body.articles).to.be.descendingBy("title");
+        });
+    });
+    it("articles can be sorted by column specified as url sort_by query", () => {
+      return request
+        .get("/api/articles?sort_by=topic")
+        .expect(200)
+        .then(res => {
+          expect(res.body.articles).to.be.descendingBy("topic");
+        });
+    });
+    it("articles can be sorted by column specified as url sort_by query", () => {
+      return request
+        .get("/api/articles?sort_by=votes")
+        .expect(200)
+        .then(res => {
+          expect(res.body.articles).to.be.descendingBy("votes");
+        });
+    });
+    it("articles can be sorted by column specified as url sort_by query", () => {
+      return request
+        .get("/api/articles?sort_by=votes&order=asc")
+        .expect(200)
+        .then(res => {
+          expect(res.body.articles).to.be.ascendingBy("votes");
+        });
+    });
   });
 });
 
-// topic, which filters the articles by the topic value specified in the query
-// sort_by, which sorts the articles by any valid column (defaults to date)
 // order, which can be set to asc or desc for ascending or descending (defaults to descending)

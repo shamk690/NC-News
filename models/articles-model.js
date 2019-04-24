@@ -5,7 +5,13 @@ const connection = require("../db/connection");
 
 //   return connection.select("*").from("articles");
 // };
-const selectAllArticles = function({ article_id, author, topic }) {
+const selectAllArticles = function({
+  article_id,
+  author,
+  topic,
+  sort_by,
+  order
+}) {
   return connection
     .select(
       "articles.author",
@@ -20,9 +26,10 @@ const selectAllArticles = function({ article_id, author, topic }) {
     .leftJoin("comments", "articles.article_id", "comments.article_id")
 
     .groupBy("articles.article_id")
+    .orderBy(sort_by || "created_at", order || "desc")
     .modify(query => {
       if (article_id) query.where("articles.article_id", article_id).first();
-      if (author) return query.where("articles.author", author);
+      if (author) query.where("articles.author", author);
       if (topic) query.where("articles.topic", topic);
     });
 };
