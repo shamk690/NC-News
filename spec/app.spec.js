@@ -7,8 +7,7 @@ const app = require("../app");
 const connection = require("../db/connection");
 
 const request = supertest(app);
-const topics = require("../db/data/test-data/articles");
-console.log(topics.length);
+
 describe("/", () => {
   //runs the seed before every test
   beforeEach(() => connection.seed.run());
@@ -24,7 +23,6 @@ describe("/", () => {
 
           .then(res => {
             expect(res.body.topics).to.be.an("array");
-            //console.log(res.body);
           });
       });
       it("GET status:200 responds with an array of object checks each topic has right properties", () => {
@@ -35,7 +33,6 @@ describe("/", () => {
           .then(res => {
             expect(res.body.topics).to.be.an("array");
             expect(res.body.topics[0]).to.contain.keys("slug", "description");
-            // console.log(res.body);
           });
       });
 
@@ -49,7 +46,6 @@ describe("/", () => {
               slug: "mitch",
               description: "The man, the Mitch, the legend"
             });
-            //console.log(topics[0]);
           });
       });
     });
@@ -60,7 +56,6 @@ describe("/", () => {
           .expect(200)
           .then(res => {
             expect(res.body.articles).to.be.an("array");
-            // console.log(res.body);
           });
       });
 
@@ -79,7 +74,6 @@ describe("/", () => {
               votes: 0,
               comment_count: "0"
             });
-            //console.log(articles[0]);
           });
       });
 
@@ -99,7 +93,7 @@ describe("/", () => {
               "author",
               "created_at"
             );
-            /// console.log(res.body.articles[0]);
+            //console.log(res.body.articles[0]);
           });
       });
       it("GET status:200 responds with specified article id object", () => {
@@ -108,7 +102,6 @@ describe("/", () => {
           .expect(200)
 
           .then(res => {
-            // expect(res.body.article).to.be.an("array");
             expect(res.body.article).to.eql({
               article_id: 1,
               comment_count: "13",
@@ -119,9 +112,41 @@ describe("/", () => {
               author: "butter_bridge",
               votes: 100
             });
-            /// console.log(res.body.articles[0]);
+          });
+      });
+      // error handling for bad request
+      it("GET status:400 responses with error when request is made with a bad ID", () => {
+        return request
+          .get("/api/articles/xyzz")
+          .expect(400)
+          .then(res => {
+            console.log(res.body);
+            expect(res.body.msg).to.eql(
+              "Bad Request, invalid input syntax for integer"
+            );
           });
       });
     });
+    it("GET status:200 responds with filtered article by username value specified in the query", () => {
+      return request
+        .get("/api/articles?author=butter_bridge")
+        .expect(200)
+
+        .then(res => {
+          expect(res.body.articles[0].author).to.eql("butter_bridge");
+        });
+    });
+    it("GET status:200 responds with filtered article by topic value specified in the query", () => {
+      return request
+        .get("/api/articles?topic=mitch")
+        .expect(200)
+        .then(res => {
+          expect(res.body.articles[0].topic).to.eql("mitch");
+        });
+    });
   });
 });
+
+// topic, which filters the articles by the topic value specified in the query
+// sort_by, which sorts the articles by any valid column (defaults to date)
+// order, which can be set to asc or desc for ascending or descending (defaults to descending)
