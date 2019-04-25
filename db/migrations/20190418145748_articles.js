@@ -17,7 +17,5 @@ exports.up = function(knex, Promise) {
 };
 
 exports.down = function(knex, Promise) {
-  console.log("removing article tables...");
-
   return knex.schema.dropTable("articles");
 };

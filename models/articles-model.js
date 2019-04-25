@@ -1,10 +1,5 @@
 const connection = require("../db/connection");
 
-// const selectAllArticles = function() {
-//   console.log("articles model");
-
-//   return connection.select("*").from("articles");
-// };
 const selectAllArticles = function({
   article_id,
   author,
@@ -33,4 +28,17 @@ const selectAllArticles = function({
       if (topic) query.where("articles.topic", topic);
     });
 };
-module.exports = selectAllArticles;
+const updateVotes = (article_id, inc_votes) => {
+  // if (article_id === undefined)
+  //   return Promise.reject({
+  //     status: 400,
+  //     msg: "Missing inc_votes key in body"
+  //   });
+  return connection("articles")
+    .where({ article_id })
+    .increment("votes", inc_votes)
+
+    .returning("*");
+};
+
+module.exports = { selectAllArticles, updateVotes };

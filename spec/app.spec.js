@@ -150,7 +150,7 @@ describe("/", () => {
         .get("/api/articles")
         .expect(200)
         .then(res => {
-          console.log("****", res.body.articles);
+          //console.log("****", res.body.articles);
           expect(res.body.articles).to.be.descendingBy("created_at");
         });
     });
@@ -196,7 +196,53 @@ describe("/", () => {
           expect(res.body.articles).to.be.ascendingBy("votes");
         });
     });
+    describe("/articles/PATCH ", () => {
+      it("updates the articles by incrementing the vote by one with", () => {
+        return request
+          .patch("/api/articles/5")
+          .send({ inc_votes: 3 })
+          .expect(200)
+          .then(({ body }) => {
+            expect(body.article[0].votes).to.equal(3);
+            expect(body.article[0].article_id).to.equal(5);
+            expect(body.article[0].title).to.equal(
+              "UNCOVERED: catspiracy to bring down democracy"
+            );
+            expect(body.article[0].topic).to.equal("cats");
+            expect(body.article[0].author).to.equal("rogersop");
+            expect(body.article[0].created_at).to.eql(
+              "2002-11-19T12:21:54.171Z"
+            );
+          });
+      });
+      it("updates the articles by decrementing the vote by one ", () => {
+        return request
+          .patch("/api/articles/5")
+          .send({ dec_votes: -2 })
+          .expect(200)
+          .then(({ body }) => {
+            expect(body.article[0].votes).to.equal(1);
+            expect(body.article[0].article_id).to.equal(5);
+            expect(body.article[0].title).to.equal(
+              "UNCOVERED: catspiracy to bring down democracy"
+            );
+            expect(body.article[0].topic).to.equal("cats");
+            expect(body.article[0].author).to.equal("rogersop");
+            expect(body.article[0].created_at).to.eql(
+              "2002-11-19T12:21:54.171Z"
+            );
+          });
+      });
+      it("PATCH - status:400 responses with error when request is made with a bad ID", () => {
+        return request
+          .patch("/api/articles/xyzz")
+          .expect(400)
+          .then(res => {
+            expect(res.body.msg).to.eql(
+              "Bad Request, invalid input syntax for integer"
+            );
+          });
+      });
+    });
   });
 });
-
-// order, which can be set to asc or desc for ascending or descending (defaults to descending)
