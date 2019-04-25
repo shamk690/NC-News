@@ -127,74 +127,135 @@ describe("/", () => {
             );
           });
       });
-    });
-    it("GET status:200 responds with filtered article by username value specified in the query", () => {
-      return request
-        .get("/api/articles?author=butter_bridge")
-        .expect(200)
+      it("GET status:200 response with an array of comments for the given articles_id", () => {
+        return request
+          .get("/api/articles/1/comments")
+          .expect(200)
+          .then(res => {
+            expect(res.body.comments).to.be.an("array");
+            expect(res.body.comments[0]).to.contain.keys(
+              "comment_id",
+              "votes",
+              "created_at",
+              "author",
+              "body"
+            );
+            //console.log("****", res.body.comments[0]);
+          });
+      });
+      it("GET status: 200 sorts the articles to date by default", () => {
+        return request
+          .get("/api/articles/1/comments")
+          .expect(200)
+          .then(res => {
+            expect(res.body.comments).to.be.descendingBy("created_at");
+          });
+      });
+      it("articles can be sorted by comment_id specified as url sort_by query", () => {
+        return request
+          .get("/api/articles/1/comments?sort_by=comment_id")
+          .expect(200)
+          .then(res => {
+            // console.log(res.body);
+            expect(res.body.comments).to.be.descendingBy("comment_id");
+            //expect(res.body.articles).to.be.sortedBy("title");
+            //expect(res.body.articles).to.be.sortedBy("topic");
+          });
+      });
+      it("articles can be sorted by votes specified as url sort_by query", () => {
+        return request
+          .get("/api/articles/1/comments?sort_by=votes")
+          .expect(200)
+          .then(res => {
+            expect(res.body.comments).to.be.descendingBy("votes");
+          });
+      });
+      it("articles can be sorted by author specified as url sort_by query", () => {
+        return request
+          .get("/api/articles/1/comments?sort_by=author")
+          .expect(200)
+          .then(res => {
+            expect(res.body.comments).to.be.descendingBy("author");
+          });
+      });
 
-        .then(res => {
-          expect(res.body.articles[0].author).to.eql("butter_bridge");
-        });
-    });
-    it("GET status:200 responds with filtered article by topic value specified in the query", () => {
-      return request
-        .get("/api/articles?topic=mitch")
-        .expect(200)
-        .then(res => {
-          expect(res.body.articles[0].topic).to.eql("mitch");
-        });
-    });
-    it("GET status: 200 sorts the articles to date by default", () => {
-      return request
-        .get("/api/articles")
-        .expect(200)
-        .then(res => {
-          //console.log("****", res.body.articles);
-          expect(res.body.articles).to.be.descendingBy("created_at");
-        });
-    });
-    it("articles can be sorted by column specified as url sort_by query", () => {
-      return request
-        .get("/api/articles?sort_by=article_id")
-        .expect(200)
-        .then(res => {
-          expect(res.body.articles).to.be.descendingBy("article_id");
-          //expect(res.body.articles).to.be.sortedBy("title");
-          //expect(res.body.articles).to.be.sortedBy("topic");
-        });
-    });
-    it("articles can be sorted by column specified as url sort_by query", () => {
-      return request
-        .get("/api/articles?sort_by=title")
-        .expect(200)
-        .then(res => {
-          expect(res.body.articles).to.be.descendingBy("title");
-        });
-    });
-    it("articles can be sorted by column specified as url sort_by query", () => {
-      return request
-        .get("/api/articles?sort_by=topic")
-        .expect(200)
-        .then(res => {
-          expect(res.body.articles).to.be.descendingBy("topic");
-        });
-    });
-    it("articles can be sorted by column specified as url sort_by query", () => {
-      return request
-        .get("/api/articles?sort_by=votes")
-        .expect(200)
-        .then(res => {
-          expect(res.body.articles).to.be.descendingBy("votes");
-        });
-    });
-    it("articles can be sorted by column specified as url sort_by query", () => {
-      return request
-        .get("/api/articles?sort_by=votes&order=asc")
-        .expect(200)
-        .then(res => {
-          expect(res.body.articles).to.be.ascendingBy("votes");
-        });
+      it("articles can be sorted by column specified as url sort_by query", () => {
+        return request
+          .get("/api/articles/1/comments?sort_by=votes&order=asc")
+          .expect(200)
+          .then(res => {
+            expect(res.body.comments).to.be.ascendingBy("votes");
+          });
+      });
+
+      it("GET status:200 responds with filtered article by username value specified in the query", () => {
+        return request
+          .get("/api/articles?author=butter_bridge")
+          .expect(200)
+
+          .then(res => {
+            expect(res.body.articles[0].author).to.eql("butter_bridge");
+          });
+      });
+      it("GET status:200 responds with filtered article by topic value specified in the query", () => {
+        return request
+          .get("/api/articles?topic=mitch")
+          .expect(200)
+          .then(res => {
+            expect(res.body.articles[0].topic).to.eql("mitch");
+          });
+      });
+
+      it("GET status: 200 sorts the articles to date by default", () => {
+        return request
+          .get("/api/articles")
+          .expect(200)
+          .then(res => {
+            expect(res.body.articles).to.be.descendingBy("created_at");
+          });
+      });
+      it("articles can be sorted by column specified as url sort_by query", () => {
+        return request
+          .get("/api/articles?sort_by=article_id")
+          .expect(200)
+          .then(res => {
+            expect(res.body.articles).to.be.descendingBy("article_id");
+            //expect(res.body.articles).to.be.sortedBy("title");
+            //expect(res.body.articles).to.be.sortedBy("topic");
+          });
+      });
+      it("articles can be sorted by column specified as url sort_by query", () => {
+        return request
+          .get("/api/articles?sort_by=title")
+          .expect(200)
+          .then(res => {
+            expect(res.body.articles).to.be.descendingBy("title");
+          });
+      });
+      it("articles can be sorted by column specified as url sort_by query", () => {
+        return request
+          .get("/api/articles?sort_by=topic")
+          .expect(200)
+          .then(res => {
+            expect(res.body.articles).to.be.descendingBy("topic");
+          });
+      });
+      it("articles can be sorted by column specified as url sort_by query", () => {
+        return request
+          .get("/api/articles?sort_by=votes")
+          .expect(200)
+          .then(res => {
+            expect(res.body.articles).to.be.descendingBy("votes");
+          });
+      });
+      it("articles can be sorted by column specified as url sort_by query", () => {
+        return request
+          .get("/api/articles?sort_by=votes&order=asc")
+          .expect(200)
+          .then(res => {
+            expect(res.body.articles).to.be.ascendingBy("votes");
+          });
+      });
     });
     describe("/articles/PATCH ", () => {
       it("updates the articles by incrementing the vote by one with", () => {
@@ -203,6 +264,8 @@ describe("/", () => {
           .send({ inc_votes: 3 })
           .expect(200)
           .then(({ body }) => {
+            //console.log(body);
+
             expect(body.article[0].votes).to.equal(3);
             expect(body.article[0].article_id).to.equal(5);
             expect(body.article[0].title).to.equal(
@@ -221,6 +284,7 @@ describe("/", () => {
           .send({ dec_votes: -2 })
           .expect(200)
           .then(({ body }) => {
+            //  console.log(body);
             expect(body.article[0].votes).to.equal(1);
             expect(body.article[0].article_id).to.equal(5);
             expect(body.article[0].title).to.equal(
@@ -233,16 +297,25 @@ describe("/", () => {
             );
           });
       });
-      it("PATCH - status:400 responses with error when request is made with a bad ID", () => {
-        return request
-          .patch("/api/articles/xyzz")
-          .expect(400)
-          .then(res => {
-            expect(res.body.msg).to.eql(
-              "Bad Request, invalid input syntax for integer"
-            );
-          });
-      });
+      // it("PATCH - status:400 responses with error when request is made with a bad ID", () => {
+      //   return request
+      //     .patch("/api/articles/xyzz")
+      //     .expect(400)
+      //     .then(res => {
+      //       expect(res.body.msg).to.eql(
+      //         "Bad Request, invalid input syntax for integer"
+      //       );
+      //     });
+      // });
+      // it("PATCH - status:400 responses missing votes key in body", () => {
+      //   return request
+      //     .patch("/api/articles/4")
+      //     .send({ banana: 2 })
+      //     .expect(200)
+      //     .then(({ body }) => {
+      //       expect(body.msg).to.eql("Missing inc_votes key in body");
+      //     });
+      // });
     });
   });
 });
