@@ -3,7 +3,8 @@ const {
   getAllArticles,
   getArticleById,
   patchVotes,
-  getCommentsByArticleId
+  getCommentsByArticleId,
+  postCommentById
 } = require("../controllers/articles-controller");
 const { methodNotAllowed } = require("../errors/index.js");
 
@@ -13,5 +14,8 @@ articlesRouter
   .get(getArticleById)
   .patch(patchVotes)
   .all(methodNotAllowed);
-articlesRouter.route("/:article_id/comments").get(getCommentsByArticleId);
+articlesRouter
+  .route("/:article_id/comments")
+  .get(getCommentsByArticleId)
+  .post(postCommentById);
 module.exports = articlesRouter;

@@ -36,7 +36,6 @@ const updateVotes = (article_id, inc_votes) => {
     .returning("*");
 };
 const selectCommentsByArticleId = ({ article_id, sort_by, order }) => {
-  console.log(sort_by);
   return connection
     .select(
       //"articles.article_id",
@@ -51,5 +50,19 @@ const selectCommentsByArticleId = ({ article_id, sort_by, order }) => {
     .where("comments.article_id", article_id)
     .orderBy(sort_by || "created_at", order || "desc");
 };
-
-module.exports = { selectAllArticles, updateVotes, selectCommentsByArticleId };
+const insertCommentByArticleId = (article_id, body) => {
+  const newComment = {
+    article_id,
+    author: body.author,
+    body: body.body
+  };
+  return connection("comments")
+    .insert(newComment)
+    .returning("*");
+};
+module.exports = {
+  selectAllArticles,
+  updateVotes,
+  selectCommentsByArticleId,
+  insertCommentByArticleId
+};

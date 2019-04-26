@@ -1,7 +1,8 @@
 const {
   selectAllArticles,
   updateVotes,
-  selectCommentsByArticleId
+  selectCommentsByArticleId,
+  insertCommentByArticleId
 } = require("../models/articles-model");
 
 exports.getAllArticles = (req, res, next) => {
@@ -29,8 +30,6 @@ exports.getArticleById = (req, res, next) => {
 exports.patchVotes = (req, res, next) => {
   const { article_id } = req.params;
   const { inc_votes } = req.body;
-  // console.log("controler ", typeof article_id);
-  // console.log("controler votes ", inc_votes);
 
   // if (typeof article_id === "string" && inc_votes === undefined) {
   //   return Promise.reject({
@@ -47,10 +46,17 @@ exports.patchVotes = (req, res, next) => {
 };
 
 exports.getCommentsByArticleId = (req, res, next) => {
-  const { article_id } = req.params;
   selectCommentsByArticleId({ ...req.params, ...req.query })
     .then(comments => {
       res.status(200).send({ comments });
+    })
+    .catch(next);
+};
+exports.postCommentById = (req, res, next) => {
+  const { article_id } = req.params;
+  insertCommentByArticleId(article_id, req.body)
+    .then(([comment]) => {
+      return res.status(200).send({ comment });
     })
     .catch(next);
 };

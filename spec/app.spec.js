@@ -178,7 +178,14 @@ describe("/", () => {
             expect(res.body.comments).to.be.descendingBy("author");
           });
       });
-
+      // it("articles can be sorted by body specified as url sort_by query", () => {
+      //   return request
+      //     .get("/api/articles/1/comments?sort_by=body")
+      //     .expect(200)
+      //     .then(res => {
+      //       expect(res.body.comments).to.be.descendingBy("body");
+      //     });
+      // });
       it("articles can be sorted by column specified as url sort_by query", () => {
         return request
           .get("/api/articles/1/comments?sort_by=votes&order=asc")
@@ -264,8 +271,6 @@ describe("/", () => {
           .send({ inc_votes: 3 })
           .expect(200)
           .then(({ body }) => {
-            //console.log(body);
-
             expect(body.article[0].votes).to.equal(3);
             expect(body.article[0].article_id).to.equal(5);
             expect(body.article[0].title).to.equal(
@@ -300,6 +305,7 @@ describe("/", () => {
       // it("PATCH - status:400 responses with error when request is made with a bad ID", () => {
       //   return request
       //     .patch("/api/articles/xyzz")
+      //     .send({inc_votes: 1})
       //     .expect(400)
       //     .then(res => {
       //       expect(res.body.msg).to.eql(
@@ -311,11 +317,64 @@ describe("/", () => {
       //   return request
       //     .patch("/api/articles/4")
       //     .send({ banana: 2 })
-      //     .expect(200)
+      //     .expect(400)
       //     .then(({ body }) => {
       //       expect(body.msg).to.eql("Missing inc_votes key in body");
       //     });
       // });
+    });
+    describe("POST/api/articles/:article_id/comments", () => {
+      it("POSTS and responses with new comment with username for the given article_id", () => {
+        return request
+          .post("/api/articles/2/comments")
+          .send({
+            author: "rogersop",
+            body: "sending new comment for id 2"
+          })
+          .expect(200)
+          .then(({ body }) => {
+            expect(body.comment.author).to.eql("rogersop");
+            expect(body.comment.body).to.eql("sending new comment for id 2");
+          });
+      });
+    });
+    describe("/comments/PATCH ", () => {
+      it("updates the comments by incrementing the vote by one with", () => {
+        return request
+          .patch("/api/comments/3")
+          .send({ inc_votes: 2 })
+          .expect(200)
+          .then(({ body }) => {
+            console.log(body);
+            expect(body.comment[0].votes).to.equal(102);
+            expect(body.comment[0].author).to.equal("icellusedkars");
+
+            expect(body.comment[0].created_at).to.eql(
+              "2015-11-23T12:36:03.389Z"
+            );
+            expect(body.comment[0].body).to.equal(
+              "Replacing the quiet elegance of the dark suit and tie with the casual indifference of these muted earth tones is a form of fashion suicide, but, uh, call me crazy — onyou it works."
+            );
+          });
+      });
+      it("updates the comment count by decrementing the vote by one", () => {
+        return request
+          .patch("/api/comments/3")
+          .send({ dec_voteses: -1 })
+          .expect(200)
+          .then(({ body }) => {
+            console.log(body);
+            expect(body.comment[0].votes).to.equal(101);
+            expect(body.comment[0].author).to.equal("icellusedkars");
+
+            expect(body.comment[0].created_at).to.eql(
+              "2015-11-23T12:36:03.389Z"
+            );
+            expect(body.comment[0].body).to.equal(
+              "Replacing the quiet elegance of the dark suit and tie with the casual indifference of these muted earth tones is a form of fashion suicide, but, uh, call me crazy — onyou it works."
+            );
+          });
+      });
     });
   });
 });

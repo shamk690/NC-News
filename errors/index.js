@@ -7,7 +7,6 @@ exports.methodNotAllowed = (req, res) => {
 };
 
 exports.handle500 = (err, req, res, next) => {
-  console.log(err);
   res.status(500).send({ msg: "Internal Server Error" });
 };
 
@@ -18,12 +17,12 @@ exports.handleCustomErrors = (err, req, res, next) => {
 
 exports.handlePsqlErrors = (err, req, res, next) => {
   const codes = ["22P02"];
-  // console.log(err.message);
 
   if (codes.includes(err.code))
     res
       .status(400)
-      .send({ msg: "Bad Request, invalid input syntax for integer" });
+      .send({ msg: "Bad Request, invalid input syntax for integer" })
+      .returning("*");
   else next(err);
 };
 
