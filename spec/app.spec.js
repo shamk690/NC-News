@@ -345,7 +345,6 @@ describe("/", () => {
           .send({ inc_votes: 2 })
           .expect(200)
           .then(({ body }) => {
-            console.log(body);
             expect(body.comment[0].votes).to.equal(102);
             expect(body.comment[0].author).to.equal("icellusedkars");
 
@@ -363,7 +362,6 @@ describe("/", () => {
           .send({ dec_voteses: -1 })
           .expect(200)
           .then(({ body }) => {
-            console.log(body);
             expect(body.comment[0].votes).to.equal(101);
             expect(body.comment[0].author).to.equal("icellusedkars");
 
@@ -372,6 +370,34 @@ describe("/", () => {
             );
             expect(body.comment[0].body).to.equal(
               "Replacing the quiet elegance of the dark suit and tie with the casual indifference of these muted earth tones is a form of fashion suicide, but, uh, call me crazy — onyou it works."
+            );
+          });
+      });
+    });
+    describe("/comments/DELETE ", () => {
+      it("DELETE -status:204 deletes the comment by given id", () => {
+        return request.delete("/api/comments/3").expect(204);
+      });
+      it("DELETE - status:404 for comment id that does not exists", () => {
+        return request
+          .delete("/api/comments/1234")
+          .expect(404)
+          .then(({ body }) => {
+            expect(body.msg).to.equal("comment_id not found");
+          });
+      });
+    });
+    describe("/api/users:username", () => {
+      it("GET status:200 responds with specified username", () => {
+        return request
+          .get("/api/users/lurker")
+          .expect(200)
+
+          .then(res => {
+            expect(res.body.user[0].username).to.eql("lurker");
+            expect(res.body.user[0].name).to.eql("do_nothing");
+            expect(res.body.user[0].avatar_url).to.eql(
+              "https://www.golenbock.com/wp-content/uploads/2015/01/placeholder-user.png"
             );
           });
       });

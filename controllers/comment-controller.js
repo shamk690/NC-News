@@ -1,4 +1,7 @@
-const { updateVotes } = require("../models/comments-model.js");
+const {
+  updateVotes,
+  removeCommentById
+} = require("../models/comments-model.js");
 
 exports.patchCommentsById = (req, res, next) => {
   const { comment_id } = req.params;
@@ -14,6 +17,17 @@ exports.patchCommentsById = (req, res, next) => {
     .then(comment => {
       // console.log("controler patchrrr", article);
       res.status(200).send({ comment });
+    })
+    .catch(next);
+};
+
+exports.deleteCommentById = (req, res, next) => {
+  const { comment_id } = req.params;
+  removeCommentById(comment_id)
+    .then(result => {
+      // console.log(result);
+      if (result === 1) res.status(204).send({ result });
+      else return Promise.reject({ status: 404, msg: "comment_id not found" });
     })
     .catch(next);
 };
