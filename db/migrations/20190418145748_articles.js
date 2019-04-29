@@ -10,7 +10,7 @@ exports.up = function(knex, Promise) {
     articleTable.string("topic");
     articleTable.foreign("topic").references("topics.slug");
 
-    articleTable.string("author");
+    articleTable.string("author").notNullable();
     articleTable.foreign("author").references("users.username");
     articleTable.timestamp("created_at").defaultTo(knex.fn.now());
   });

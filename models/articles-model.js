@@ -51,6 +51,12 @@ const selectCommentsByArticleId = ({ article_id, sort_by, order }) => {
     .orderBy(sort_by || "created_at", order || "desc");
 };
 const insertCommentByArticleId = (article_id, body) => {
+  //if (body.author === undefined) body.author = "butter_bridge";
+  if (body.author === undefined)
+    return Promise.reject({
+      status: 400,
+      msg: "400: Bad Request"
+    });
   const newComment = {
     article_id,
     author: body.author,

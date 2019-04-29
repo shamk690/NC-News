@@ -8,7 +8,10 @@ const {
 } = require("../controllers/articles-controller");
 const { methodNotAllowed } = require("../errors/index.js");
 
-articlesRouter.route("/").get(getAllArticles);
+articlesRouter
+  .route("/")
+  .get(getAllArticles)
+  .all(methodNotAllowed);
 articlesRouter
   .route("/:article_id")
   .get(getArticleById)
@@ -17,5 +20,6 @@ articlesRouter
 articlesRouter
   .route("/:article_id/comments")
   .get(getCommentsByArticleId)
-  .post(postCommentById);
+  .post(postCommentById)
+  .all(methodNotAllowed);
 module.exports = articlesRouter;

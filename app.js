@@ -4,7 +4,8 @@ const {
   handleCustomErrors,
   handlePsqlErrors,
   routeNotFound,
-  handle500
+  handle500,
+  handlePsqlErrors404
 } = require("./errors");
 
 const app = express();
@@ -17,7 +18,7 @@ app.all("/*", routeNotFound);
 app.use(handleCustomErrors);
 
 app.use(handlePsqlErrors);
-
+app.use(handlePsqlErrors404);
 app.use(handle500);
 
 module.exports = app;

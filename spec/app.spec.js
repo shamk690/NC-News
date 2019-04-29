@@ -127,6 +127,16 @@ describe("/", () => {
             );
           });
       });
+
+      it("GET status:404 responses if article not with valid article_id", () => {
+        return request
+          .get("/api/articles/1000")
+          .expect(404)
+          .then(res => {
+            expect(res.body.msg).to.eql("404 Not Found");
+          });
+      });
+
       it("GET status:200 response with an array of comments for the given articles_id", () => {
         return request
           .get("/api/articles/1/comments")
@@ -140,9 +150,18 @@ describe("/", () => {
               "author",
               "body"
             );
-            //console.log("****", res.body.comments[0]);
           });
       });
+
+      it("GET status:404 responses with Not Found when given invalid article_id to retrieve comments", () => {
+        return request
+          .get("/api/articles/1000/comments")
+          .expect(404)
+          .then(res => {
+            expect(res.body.msg).to.eql("404 Not Found");
+          });
+      });
+
       it("GET status: 200 sorts the articles to date by default", () => {
         return request
           .get("/api/articles/1/comments")
@@ -156,10 +175,7 @@ describe("/", () => {
           .get("/api/articles/1/comments?sort_by=comment_id")
           .expect(200)
           .then(res => {
-            // console.log(res.body);
             expect(res.body.comments).to.be.descendingBy("comment_id");
-            //expect(res.body.articles).to.be.sortedBy("title");
-            //expect(res.body.articles).to.be.sortedBy("topic");
           });
       });
       it("articles can be sorted by votes specified as url sort_by query", () => {
@@ -186,12 +202,20 @@ describe("/", () => {
       //       expect(res.body.comments).to.be.descendingBy("body");
       //     });
       // });
-      it("articles can be sorted by column specified as url sort_by query", () => {
+      it("GET status:200 articles can be sorted by column specified as url sort_by query", () => {
         return request
           .get("/api/articles/1/comments?sort_by=votes&order=asc")
           .expect(200)
           .then(res => {
             expect(res.body.comments).to.be.ascendingBy("votes");
+          });
+      });
+      it("GET status: 400 when sort_by query is invalid", () => {
+        return request
+          .get("/api/articles/1/comments?sort_by=not-a-column")
+          .expect(400)
+          .then(({ body }) => {
+            expect(body.msg).to.eql("400: Bad Request");
           });
       });
 
@@ -212,6 +236,17 @@ describe("/", () => {
             expect(res.body.articles[0].topic).to.eql("mitch");
           });
       });
+      ////////error testing for query where topic does not exists
+      it("GET status: 404 when topic does not exists", () => {
+        return request
+          .get("/api/articles?topic=not-an-author")
+          .expect(404)
+          .then(({ body }) => {
+            expect(body.msg).to.eql(
+              "The requested resource could not be found"
+            );
+          });
+      });
 
       it("GET status: 200 sorts the articles to date by default", () => {
         return request
@@ -227,8 +262,6 @@ describe("/", () => {
           .expect(200)
           .then(res => {
             expect(res.body.articles).to.be.descendingBy("article_id");
-            //expect(res.body.articles).to.be.sortedBy("title");
-            //expect(res.body.articles).to.be.sortedBy("topic");
           });
       });
       it("articles can be sorted by column specified as url sort_by query", () => {
@@ -255,6 +288,15 @@ describe("/", () => {
             expect(res.body.articles).to.be.descendingBy("votes");
           });
       });
+      it("GET status: 400 when sort_by query is invalid", () => {
+        return request
+          .get("/api/articles?sort_by=not-a-column")
+          .expect(400)
+          .then(({ body }) => {
+            expect(body.msg).to.eql("400: Bad Request");
+          });
+      });
+
       it("articles can be sorted by column specified as url sort_by query", () => {
         return request
           .get("/api/articles?sort_by=votes&order=asc")
@@ -271,58 +313,64 @@ describe("/", () => {
           .send({ inc_votes: 3 })
           .expect(200)
           .then(({ body }) => {
-            expect(body.article[0].votes).to.equal(3);
-            expect(body.article[0].article_id).to.equal(5);
-            expect(body.article[0].title).to.equal(
+            expect(body.article.votes).to.equal(3);
+            expect(body.article.article_id).to.equal(5);
+            expect(body.article.title).to.equal(
               "UNCOVERED: catspiracy to bring down democracy"
             );
-            expect(body.article[0].topic).to.equal("cats");
-            expect(body.article[0].author).to.equal("rogersop");
-            expect(body.article[0].created_at).to.eql(
-              "2002-11-19T12:21:54.171Z"
-            );
+            expect(body.article.topic).to.equal("cats");
+            expect(body.article.author).to.equal("rogersop");
+            expect(body.article.created_at).to.eql("2002-11-19T12:21:54.171Z");
           });
       });
       it("updates the articles by decrementing the vote by one ", () => {
         return request
           .patch("/api/articles/5")
-          .send({ dec_votes: -2 })
+          .send({ inc_votes: -1 })
           .expect(200)
           .then(({ body }) => {
-            //  console.log(body);
-            expect(body.article[0].votes).to.equal(1);
-            expect(body.article[0].article_id).to.equal(5);
-            expect(body.article[0].title).to.equal(
+            expect(body.article.votes).to.equal(-1);
+            expect(body.article.article_id).to.equal(5);
+            expect(body.article.title).to.equal(
               "UNCOVERED: catspiracy to bring down democracy"
             );
-            expect(body.article[0].topic).to.equal("cats");
-            expect(body.article[0].author).to.equal("rogersop");
-            expect(body.article[0].created_at).to.eql(
-              "2002-11-19T12:21:54.171Z"
+            expect(body.article.topic).to.equal("cats");
+            expect(body.article.author).to.equal("rogersop");
+            expect(body.article.created_at).to.eql("2002-11-19T12:21:54.171Z");
+          });
+      });
+      it("PATCH - status:405 responses with error when patch request is made without  ID", () => {
+        return request
+          .patch("/api/articles")
+          .send({ inc_votes: 1 })
+          .expect(405)
+          .then(res => {
+            expect(res.body.msg).to.eql("405 Method Not Allowed");
+          });
+      });
+
+      it("PATCH - status:400 responses with error when request is made with a bad ID", () => {
+        return request
+          .patch("/api/articles/xyzz")
+          .send({ inc_votes: 1 })
+          .expect(400)
+          .then(res => {
+            expect(res.body.msg).to.eql(
+              "Bad Request, invalid input syntax for integer"
             );
           });
       });
-      // it("PATCH - status:400 responses with error when request is made with a bad ID", () => {
-      //   return request
-      //     .patch("/api/articles/xyzz")
-      //     .send({inc_votes: 1})
-      //     .expect(400)
-      //     .then(res => {
-      //       expect(res.body.msg).to.eql(
-      //         "Bad Request, invalid input syntax for integer"
-      //       );
-      //     });
-      // });
-      // it("PATCH - status:400 responses missing votes key in body", () => {
-      //   return request
-      //     .patch("/api/articles/4")
-      //     .send({ banana: 2 })
-      //     .expect(400)
-      //     .then(({ body }) => {
-      //       expect(body.msg).to.eql("Missing inc_votes key in body");
-      //     });
-      // });
+      it("PATCH - status:400 responses missing votes key in body", () => {
+        return request
+          .patch("/api/articles/4")
+          .send({ banana: 2 })
+          .expect(400)
+          .then(({ body }) => {
+            expect(body.msg).to.eql("Missing inc_votes key in body");
+          });
+      });
     });
+
     describe("POST/api/articles/:article_id/comments", () => {
       it("POSTS and responses with new comment with username for the given article_id", () => {
         return request
@@ -331,13 +379,46 @@ describe("/", () => {
             author: "rogersop",
             body: "sending new comment for id 2"
           })
-          .expect(200)
+          .expect(201)
           .then(({ body }) => {
             expect(body.comment.author).to.eql("rogersop");
             expect(body.comment.body).to.eql("sending new comment for id 2");
           });
       });
+      it("POST - status:400 responses Bad request when request does not include the author key", () => {
+        return request
+          .post("/api/articles/2/comments")
+          .send({
+            body: "sending new comment for id 2"
+          })
+          .expect(400)
+          .then(({ body }) => {
+            expect(body.msg).to.eql("400: Bad Request");
+          });
+      });
+      it("PUT - status:405 with Method Not Allowed", () => {
+        return request
+          .put("/api/articles/4")
+          .send({ banana: 2 })
+          .expect(405)
+          .then(({ body }) => {
+            expect(body.msg).to.eql("405 Method Not Allowed");
+          });
+      });
+      it("POST status:404 responses if article not with valid article_id", () => {
+        return request
+          .post("/api/articles/1000/comments")
+          .send({
+            author: "rogersop",
+            body: "sending new comment for id 2"
+          })
+          .expect(404)
+          .then(res => {
+            expect(res.body.msg).to.eql("404: Not Found");
+          });
+      });
     });
+
     describe("/comments/PATCH ", () => {
       it("updates the comments by incrementing the vote by one with", () => {
         return request
@@ -345,30 +426,36 @@ describe("/", () => {
           .send({ inc_votes: 2 })
           .expect(200)
           .then(({ body }) => {
-            expect(body.comment[0].votes).to.equal(102);
-            expect(body.comment[0].author).to.equal("icellusedkars");
+            expect(body.comment.votes).to.equal(102);
+            expect(body.comment.author).to.equal("icellusedkars");
 
-            expect(body.comment[0].created_at).to.eql(
-              "2015-11-23T12:36:03.389Z"
-            );
-            expect(body.comment[0].body).to.equal(
+            expect(body.comment.created_at).to.eql("2015-11-23T12:36:03.389Z");
+            expect(body.comment.body).to.equal(
               "Replacing the quiet elegance of the dark suit and tie with the casual indifference of these muted earth tones is a form of fashion suicide, but, uh, call me crazy — onyou it works."
             );
           });
       });
+      it("PATCH - status:404 responses with error when PATCH contains a valid comment_id that does not exist", () => {
+        return request
+          .patch("/api/comments/1000")
+          .send({ inc_votes: 1 })
+          .expect(404)
+          .then(res => {
+            expect(res.body.msg).to.eql("404: Not Found");
+          });
+      });
+
       it("updates the comment count by decrementing the vote by one", () => {
         return request
           .patch("/api/comments/3")
-          .send({ dec_voteses: -1 })
+          .send({ inc_votes: -1 })
           .expect(200)
           .then(({ body }) => {
-            expect(body.comment[0].votes).to.equal(101);
-            expect(body.comment[0].author).to.equal("icellusedkars");
+            expect(body.comment.votes).to.equal(99);
+            expect(body.comment.author).to.equal("icellusedkars");
 
-            expect(body.comment[0].created_at).to.eql(
-              "2015-11-23T12:36:03.389Z"
-            );
-            expect(body.comment[0].body).to.equal(
+            expect(body.comment.created_at).to.eql("2015-11-23T12:36:03.389Z");
+            expect(body.comment.body).to.equal(
               "Replacing the quiet elegance of the dark suit and tie with the casual indifference of these muted earth tones is a form of fashion suicide, but, uh, call me crazy — onyou it works."
             );
           });
@@ -394,11 +481,20 @@ describe("/", () => {
           .expect(200)
 
           .then(res => {
-            expect(res.body.user[0].username).to.eql("lurker");
-            expect(res.body.user[0].name).to.eql("do_nothing");
-            expect(res.body.user[0].avatar_url).to.eql(
+            expect(res.body.user).to.be.an("object");
+            expect(res.body.user.username).to.eql("lurker");
+            expect(res.body.user.name).to.eql("do_nothing");
+            expect(res.body.user.avatar_url).to.eql(
               "https://www.golenbock.com/wp-content/uploads/2015/01/placeholder-user.png"
             );
+          });
+      });
+      it("GET status:404 responses if Not Found if user is not found with a valid user_id", () => {
+        return request
+          .get("/api/users/not-a-username")
+          .expect(404)
+          .then(res => {
+            expect(res.body.msg).to.eql("404 Not Found");
           });
       });
     });
