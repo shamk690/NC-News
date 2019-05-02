@@ -23,7 +23,11 @@ const selectAllArticles = function({
     .groupBy("articles.article_id")
     .orderBy(sort_by || "created_at", order || "desc")
     .modify(query => {
-      if (article_id) query.where("articles.article_id", article_id).first();
+      if (article_id)
+        query
+          .where("articles.article_id", article_id)
+          .select("articles.body")
+          .first();
       if (author) query.where("articles.author", author);
       if (topic) query.where("articles.topic", topic);
     });
@@ -31,11 +35,13 @@ const selectAllArticles = function({
 const updateVotes = (article_id, inc_votes) => {
   return connection("articles")
     .where({ article_id })
-    .increment("votes", inc_votes)
+    .increment("votes", inc_votes || 0)
 
     .returning("*");
 };
 const selectCommentsByArticleId = ({ article_id, sort_by, order }) => {
+  //console.log(article_id);
+
   return connection
     .select(
       //"articles.article_id",
@@ -48,18 +54,19 @@ const selectCommentsByArticleId = ({ article_id, sort_by, order }) => {
     .from("articles")
     .innerJoin("comments", "articles.article_id", "comments.article_id")
     .where("comments.article_id", article_id)
-    .orderBy(sort_by || "created_at", order || "desc");
+    .orderBy(sort_by || "created_at", order || "desc")
+    .returning("*");
 };
 const insertCommentByArticleId = (article_id, body) => {
   //if (body.author === undefined) body.author = "butter_bridge";
-  if (body.author === undefined)
+  if (body.username === undefined)
     return Promise.reject({
       status: 400,
       msg: "400: Bad Request"
     });
   const newComment = {
     article_id,
-    author: body.author,
+    author: body.username,
     body: body.body
   };
   return connection("comments")

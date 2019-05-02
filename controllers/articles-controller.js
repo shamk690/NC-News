@@ -49,6 +49,14 @@ exports.patchVotes = (req, res, next) => {
 };
 
 exports.getCommentsByArticleId = (req, res, next) => {
+  const { article_id } = req.params;
+  selectAllArticles({ article_id }).then(comments => {
+    if (comments !== undefined && comments.comment_count === "0") {
+      comments = [];
+      return res.status(200).send({ comments: comments });
+    }
+  });
+
   selectCommentsByArticleId({ ...req.params, ...req.query })
     .then(comments => {
       if (!comments.length) {
@@ -61,17 +69,13 @@ exports.getCommentsByArticleId = (req, res, next) => {
     })
     .catch(next);
 };
+
 exports.postCommentById = (req, res, next) => {
   const { article_id } = req.params;
 
   insertCommentByArticleId(article_id, req.body)
     .then(([comment]) => {
-      // if (!comment[author])
-      //   return Promise.reject({
-      //     status: 400,
-      //     msg: "Bad Request"
-      //   });
-      res.status(201).send({ comment });
+      res.status(201).send({ comment: comment });
     })
     .catch(next);
 };

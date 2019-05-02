@@ -7,7 +7,7 @@ exports.getUserByUserName = (req, res, next) => {
       if (user === undefined) {
         return Promise.reject({
           status: 404,
-          msg: "404 Not Found"
+          msg: "404: user Not Found"
         });
       }
       res.status(200).send({ user });

@@ -112,6 +112,7 @@ describe("/", () => {
               title: "Living in the shadow of a great man",
               topic: "mitch",
               author: "butter_bridge",
+              body: "I find this existence challenging",
               votes: 100
             });
           });
@@ -152,6 +153,16 @@ describe("/", () => {
             );
           });
       });
+      it("GET status:200 response with an EMPTY array of comments for the given articles_id when there are no comments", () => {
+        return request
+          .get("/api/articles/2/comments")
+          .expect(200)
+          .then(res => {
+            console.log(res.body.comments);
+            expect(res.body.comments).to.be.an("array");
+            expect(res.body.comments).to.eql([]);
+          });
+      });
 
       it("GET status:404 responses with Not Found when given invalid article_id to retrieve comments", () => {
         return request
@@ -167,6 +178,7 @@ describe("/", () => {
           .get("/api/articles/1/comments")
           .expect(200)
           .then(res => {
+            //   console.log(res.body.comments);
             expect(res.body.comments).to.be.descendingBy("created_at");
           });
       });
@@ -376,7 +388,20 @@ describe("/", () => {
         return request
           .post("/api/articles/2/comments")
           .send({
-            author: "rogersop",
+            username: "rogersop",
+            body: "sending new comment for id 2"
+          })
+          .expect(201)
+          .then(({ body }) => {
+            expect(body.comment.author).to.eql("rogersop");
+            expect(body.comment.body).to.eql("sending new comment for id 2");
+          });
+      });
+      it("POSTS and responses with new comment with username for the given article_id", () => {
+        return request
+          .post("/api/articles/1/comments")
+          .send({
+            username: "rogersop",
             body: "sending new comment for id 2"
           })
           .expect(201)
@@ -396,6 +421,7 @@ describe("/", () => {
             expect(body.msg).to.eql("400: Bad Request");
           });
       });
+
       it("PUT - status:405 with Method Not Allowed", () => {
         return request
           .put("/api/articles/4")
@@ -405,11 +431,12 @@ describe("/", () => {
             expect(body.msg).to.eql("405 Method Not Allowed");
           });
       });
+
       it("POST status:404 responses if article not with valid article_id", () => {
         return request
           .post("/api/articles/1000/comments")
           .send({
-            author: "rogersop",
+            username: "rogersop",
             body: "sending new comment for id 2"
           })
           .expect(404)
@@ -494,7 +521,7 @@ describe("/", () => {
           .get("/api/users/not-a-username")
           .expect(404)
           .then(res => {
-            expect(res.body.msg).to.eql("404 Not Found");
+            expect(res.body.msg).to.eql("404: user Not Found");
           });
       });
     });
