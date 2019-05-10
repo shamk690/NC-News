@@ -1,5 +1,3 @@
-const dbConfig = require("../knexfile");
-
 const dbConfig =
   ENV === "production"
     ? {
