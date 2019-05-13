@@ -74,7 +74,8 @@ describe("/", () => {
               topic: "mitch",
               created_at: "2018-11-15T12:21:54.171Z",
               votes: 100,
-              comment_count: "13"
+              comment_count: "13",
+              body: "I find this existence challenging"
             });
           });
       });

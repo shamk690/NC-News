@@ -14,7 +14,8 @@ const selectAllArticles = function({
       "articles.article_id",
       "articles.topic",
       "articles.created_at",
-      "articles.votes"
+      "articles.votes",
+      "articles.body"
     )
     .from("articles")
     .count({ comment_count: "comments.article_id" })
