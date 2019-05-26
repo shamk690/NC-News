@@ -2,7 +2,8 @@ const {
   selectAllArticles,
   updateVotes,
   selectCommentsByArticleId,
-  insertCommentByArticleId
+  insertCommentByArticleId,
+  insertArticle
 } = require("../models/articles-model");
 
 exports.getAllArticles = (req, res, next) => {
@@ -76,6 +77,15 @@ exports.postCommentById = (req, res, next) => {
   insertCommentByArticleId(article_id, req.body)
     .then(([comment]) => {
       res.status(201).send({ comment: comment });
+    })
+    .catch(next);
+};
+
+exports.postArticle = (req, res, next) => {
+  insertArticle(req.body)
+    .then(([article]) => {
+      console.log("controller ", article);
+      res.status(201).send({ article: article });
     })
     .catch(next);
 };

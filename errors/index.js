@@ -23,7 +23,6 @@ exports.handlePsqlErrors404 = (err, req, res, next) => {
 
 exports.handlePsqlErrors = (err, req, res, next) => {
   const codes = ["22P02"];
-
   if (codes.includes(err.code))
     res
       .status(400)

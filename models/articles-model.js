@@ -74,9 +74,22 @@ const insertCommentByArticleId = (article_id, body) => {
     .insert(newComment)
     .returning("*");
 };
+const insertArticle = body => {
+  const newArticle = {
+    title: body.title,
+    body: body.body,
+    author: body.author,
+
+    topic: body.topic
+  };
+  return connection("articles")
+    .insert(newArticle)
+    .returning("*");
+};
 module.exports = {
   selectAllArticles,
   updateVotes,
   selectCommentsByArticleId,
-  insertCommentByArticleId
+  insertCommentByArticleId,
+  insertArticle
 };

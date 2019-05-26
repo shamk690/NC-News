@@ -526,5 +526,25 @@ describe("/", () => {
           });
       });
     });
+
+    describe("POST/api/articles", () => {
+      it("POSTS and responses with new article", () => {
+        return request
+          .post("/api/articles")
+          .send({
+            author: "icellusedkars",
+            body: "sending new article",
+            title: "title from icellusedkars",
+            topic: "mitch"
+          })
+          .expect(201)
+          .then(({ body }) => {
+            //author: "icellusedkars",
+            expect(body.article.author).to.eql("icellusedkars");
+            expect(body.article.body).to.eql("sending new article");
+            expect(body.article.topic).to.eql("mitch");
+          });
+      });
+    });
   });
 });
