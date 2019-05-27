@@ -86,10 +86,18 @@ const insertArticle = body => {
     .insert(newArticle)
     .returning("*");
 };
+
+const removeArticleById = article_id => {
+  return connection("articles")
+    .where({ article_id })
+    .delete();
+};
+
 module.exports = {
   selectAllArticles,
   updateVotes,
   selectCommentsByArticleId,
   insertCommentByArticleId,
-  insertArticle
+  insertArticle,
+  removeArticleById
 };

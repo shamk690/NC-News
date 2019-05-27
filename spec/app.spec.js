@@ -546,5 +546,11 @@ describe("/", () => {
           });
       });
     });
+
+    describe("/article/DELETE ", () => {
+      it("DELETE -status:204 deletes the comment by given id", () => {
+        return request.delete("/api/articles/7").expect(204);
+      });
+    });
   });
 });

@@ -3,7 +3,8 @@ const {
   updateVotes,
   selectCommentsByArticleId,
   insertCommentByArticleId,
-  insertArticle
+  insertArticle,
+  removeArticleById
 } = require("../models/articles-model");
 
 exports.getAllArticles = (req, res, next) => {
@@ -86,6 +87,16 @@ exports.postArticle = (req, res, next) => {
     .then(([article]) => {
       console.log("controller ", article);
       res.status(201).send({ article: article });
+    })
+    .catch(next);
+};
+
+exports.deleteArticleById = (req, res, next) => {
+  const { article_id } = req.params;
+  removeArticleById(article_id)
+    .then(result => {
+      if (result === 1) res.status(204).send({ result });
+      else return Promise.reject({ status: 404, msg: "comment_id not found" });
     })
     .catch(next);
 };
