@@ -5,7 +5,9 @@ const selectAllArticles = function({
   author,
   topic,
   sort_by,
-  order
+  order,
+  limit,
+  p
 }) {
   return connection
     .select(
@@ -23,6 +25,8 @@ const selectAllArticles = function({
 
     .groupBy("articles.article_id")
     .orderBy(sort_by || "created_at", order || "desc")
+    .limit(limit || 36)
+    .offset(p)
     .modify(query => {
       if (article_id)
         query

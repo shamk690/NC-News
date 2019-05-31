@@ -16,7 +16,6 @@ exports.handleCustomErrors = (err, req, res, next) => {
   else next(err);
 };
 exports.handlePsqlErrors404 = (err, req, res, next) => {
-  console.log("errorr", err);
   const codes = ["23503"];
   if (codes.includes(err.code)) res.status(404).send({ msg: "404: Not Found" });
   else next(err);

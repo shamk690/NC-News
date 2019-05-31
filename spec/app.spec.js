@@ -99,6 +99,23 @@ describe("/", () => {
             //console.log(res.body.articles[0]);
           });
       });
+      it("when given the query limit = 5 responds with the 5 articles per page", () => {
+        return request
+          .get("/api/articles?limit=5")
+          .expect(200)
+          .then(res => {
+            expect(res.body.articles.length).to.equal(5);
+          });
+      });
+
+      it("when given the query limit = 1&p=1 responds with the next page ", () => {
+        return request
+          .get("/api/articles?limit=1&p=1")
+          .expect(200)
+          .then(res => {
+            expect(res.body.articles.length).to.equal(1);
+          });
+      });
       it("GET status:200 responds with specified article id object", () => {
         return request
           .get("/api/articles/1")
