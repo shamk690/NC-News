@@ -9,37 +9,34 @@ const selectAllArticles = function({
   limit,
   p
 }) {
-  return (
-    connection
-      .select(
-        "articles.author",
-        "articles.title",
-        "articles.article_id",
-        "articles.topic",
-        "articles.created_at",
-        "articles.votes",
-        "articles.body"
-      )
-      .from("articles")
-      .count({ comment_count: "comments.article_id" })
-      .leftJoin("comments", "articles.article_id", "comments.article_id")
+  return connection
+    .select(
+      "articles.author",
+      "articles.title",
+      "articles.article_id",
+      "articles.topic",
+      "articles.created_at",
+      "articles.votes",
+      "articles.body"
+    )
+    .from("articles")
+    .count({ comment_count: "comments.article_id" })
+    .leftJoin("comments", "articles.article_id", "comments.article_id")
 
-      .groupBy("articles.article_id")
-      .orderBy(sort_by || "created_at", order || "desc")
-      // .limit(limit || 10)
-      // .offset(p)
+    .groupBy("articles.article_id")
+    .orderBy(sort_by || "created_at", order || "desc")
+    .limit(limit || 10)
+    .offset(p)
 
-      .modify(query => {
-        if (article_id)
-          query
-            .where("articles.article_id", article_id)
-            .select("articles.body")
-            .first();
-        if (author) query.where("articles.author", author);
-        if (topic) query.where("articles.topic", topic);
-        if (!topic && !author) query.limit(limit || 10).offset(p);
-      })
-  );
+    .modify(query => {
+      if (article_id)
+        query
+          .where("articles.article_id", article_id)
+          .select("articles.body")
+          .first();
+      if (author) query.where("articles.author", author);
+      if (topic) query.where("articles.topic", topic);
+    });
 };
 const updateVotes = (article_id, inc_votes) => {
   return connection("articles")
