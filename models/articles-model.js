@@ -25,7 +25,7 @@ const selectAllArticles = function({
 
     .groupBy("articles.article_id")
     .orderBy(sort_by || "created_at", order || "desc")
-    .limit(limit || 40)
+    .limit(limit || 50)
     .offset(p)
 
     .modify(query => {
