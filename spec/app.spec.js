@@ -66,7 +66,7 @@ describe("/", () => {
           .get("/api/articles")
           .expect(200)
           .then(({ body: { articles } }) => {
-            expect(articles).have.length(12);
+            expect(articles).have.length(10);
             expect(articles[0]).to.eql({
               author: "butter_bridge",
               title: "Living in the shadow of a great man",
