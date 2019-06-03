@@ -27,7 +27,6 @@ const selectAllArticles = function({
     .orderBy(sort_by || "created_at", order || "desc")
     .limit(limit || 10)
     .offset(p)
-
     .modify(query => {
       if (article_id)
         query
@@ -36,6 +35,7 @@ const selectAllArticles = function({
           .first();
       if (author) query.where("articles.author", author);
       if (topic) query.where("articles.topic", topic);
+      if (limit) query.clearOrder().orderBy("articles.article_id ", "desc");
     });
 };
 const updateVotes = (article_id, inc_votes) => {
