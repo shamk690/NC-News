@@ -266,6 +266,15 @@ describe("/", () => {
             expect(res.body.articles[0].topic).to.eql("mitch");
           });
       });
+      it("GET status:200 responds with filtered article by topic value specified in the query", () => {
+        return request
+          .get("/api/articles?topic=mitch&limit=1&p=1")
+          .expect(200)
+          .then(res => {
+            expect(res.body.articles[0].topic).to.equal("mitch");
+            expect(res.body.articles.length).to.equal(1);
+          });
+      });
       ////////error testing for query where topic does not exists
       it("GET status: 404 when topic does not exists", () => {
         return request

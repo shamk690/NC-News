@@ -19,14 +19,16 @@ const selectAllArticles = function({
       "articles.votes",
       "articles.body"
     )
+
     .from("articles")
+
     .count({ comment_count: "comments.article_id" })
     .leftJoin("comments", "articles.article_id", "comments.article_id")
 
     .groupBy("articles.article_id")
+
     .orderBy(sort_by || "created_at", order || "desc")
-    .limit(limit || 10)
-    .offset(p)
+
     .modify(query => {
       if (article_id)
         query
@@ -35,7 +37,13 @@ const selectAllArticles = function({
           .first();
       if (author) query.where("articles.author", author);
       if (topic) query.where("articles.topic", topic);
-      if (limit) query.clearOrder().orderBy("articles.article_id ", "desc");
+      query.limit(limit || 10).offset(p);
+      if (limit)
+        query
+          .select(connection.raw(`row_number() OVER ()  AS total_count`))
+
+          .clearOrder()
+          .orderBy("total_count ", "desc");
     });
 };
 const updateVotes = (article_id, inc_votes) => {
