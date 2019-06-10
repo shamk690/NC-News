@@ -4,4 +4,14 @@ const selectAllTopics = function() {
   return connection.select("*").from("topics");
 };
 
-module.exports = selectAllTopics;
+const insertTopic = body => {
+  const newTopic = {
+    slug: body.slug,
+    description: body.description
+  };
+  return connection("topics")
+    .insert(newTopic)
+    .returning("*");
+};
+
+module.exports = { selectAllTopics, insertTopic };

@@ -578,5 +578,86 @@ describe("/", () => {
         return request.delete("/api/articles/7").expect(204);
       });
     });
+
+    //insert new user
+    describe("POST/api/users", () => {
+      it("POSTS and responses with new user", () => {
+        return request
+          .post("/api/users")
+          .send({
+            username: "newUser",
+            avatar_url:
+              "https://www.healthytherapies.com/wp-content/uploads/2016/06/Lime3.jpg",
+            name: "New User"
+          })
+          .expect(201)
+          .then(({ body }) => {
+            expect(body.user.username).to.eql("newUser");
+            expect(body.user.avatar_url).to.eql(
+              "https://www.healthytherapies.com/wp-content/uploads/2016/06/Lime3.jpg"
+            );
+            expect(body.user.name).to.eql("New User");
+          });
+      });
+    });
+
+    //gets users
+    describe("/users:GET: GET", () => {
+      it("GET status:200 responds with an array of all the users object", () => {
+        return request
+          .get("/api/users")
+          .expect(200)
+
+          .then(res => {
+            expect(res.body.users).to.be.an("array");
+          });
+      });
+      it("GET status:200 responds with an array of object checks each users has right properties", () => {
+        return request
+          .get("/api/users")
+          .expect(200)
+
+          .then(res => {
+            expect(res.body.users).to.be.an("array");
+            expect(res.body.users[0]).to.contain.keys(
+              "username",
+              "avatar_url",
+              "name"
+            );
+          });
+      });
+
+      it("GET status:200 returns the length of the rows in database to be 3 and checks for first row", () => {
+        return request
+          .get("/api/users")
+          .expect(200)
+          .then(({ body: { users } }) => {
+            expect(users).have.length(4);
+            expect(users[0]).to.eql({
+              username: "butter_bridge",
+              avatar_url:
+                "https://www.healthytherapies.com/wp-content/uploads/2016/06/Lime3.jpg",
+              name: "jonny"
+            });
+          });
+      });
+    });
+    //post topic
+    describe("POST/api/topics", () => {
+      it("POSTS and responses with new topic", () => {
+        return request
+          .post("/api/topics")
+          .send({
+            slug: "bike Riding",
+            description: "How safe is bike riding"
+          })
+          .expect(201)
+          .then(({ body }) => {
+            expect(body.topic.slug).to.eql("bike Riding");
+            expect(body.topic.description).to.eql("How safe is bike riding");
+          });
+      });
+    });
   });
 });
+

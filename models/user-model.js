@@ -8,6 +8,26 @@ const selectUserByUsername = username => {
     .returning("*");
 };
 
-module.exports = {
-  selectUserByUsername
+const selectAllUsers = function() {
+  return connection.select("*").from("users");
 };
+
+const insertUser = body => {
+  const newUser = {
+    username: body.username,
+    avatar_url: body.avatar_url,
+    name: body.name
+  };
+  return connection("users")
+    .insert(newUser)
+    .returning("*");
+};
+
+module.exports = {
+  selectUserByUsername,
+  selectAllUsers,
+  insertUser
+};
+
+// selectAllUsers,
+// insertUser
