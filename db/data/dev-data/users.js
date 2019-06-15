@@ -3,7 +3,7 @@ module.exports = [
     username: "tickle122",
     name: "Tom Tickle",
     avatar_url:
-      "https://vignette1.wikia.nocookie.net/mrmen/images/7/7f/Mr_Happy.jpg/revision/latest?cb=20140102171729"
+      "https://gravatar.com/avatar/15b8d2e19ee0e01935dbcdc6b79ac4a1?s=400&d=robohash&r=x"
   },
   {
     username: "grumpy19",

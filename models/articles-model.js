@@ -24,7 +24,6 @@ const selectAllArticles = function({
 
     .count({ comment_count: "comments.article_id" })
     .leftJoin("comments", "articles.article_id", "comments.article_id")
-
     .groupBy("articles.article_id")
 
     .orderBy(sort_by || "created_at", order || "desc")
@@ -37,7 +36,7 @@ const selectAllArticles = function({
           .first();
       if (author) query.where("articles.author", author);
       if (topic) query.where("articles.topic", topic);
-      query.limit(limit || 10).offset(p);
+      if (!sort_by) query.limit(limit || 10).offset(p);
       if (limit)
         query
           .select(connection.raw(`row_number() OVER ()  AS total_count`))
@@ -67,6 +66,7 @@ const selectCommentsByArticleId = ({ article_id, sort_by, order }) => {
     )
     .from("articles")
     .innerJoin("comments", "articles.article_id", "comments.article_id")
+
     .where("comments.article_id", article_id)
     .orderBy(sort_by || "created_at", order || "desc")
     .returning("*");
