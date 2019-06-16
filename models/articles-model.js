@@ -53,11 +53,8 @@ const updateVotes = (article_id, inc_votes) => {
     .returning("*");
 };
 const selectCommentsByArticleId = ({ article_id, sort_by, order }) => {
-  //console.log(article_id);
-
   return connection
     .select(
-      //"articles.article_id",
       "comments.comment_id",
       "comments.votes",
       "comments.created_at",
@@ -72,7 +69,6 @@ const selectCommentsByArticleId = ({ article_id, sort_by, order }) => {
     .returning("*");
 };
 const insertCommentByArticleId = (article_id, body) => {
-  //if (body.author === undefined) body.author = "butter_bridge";
   if (body.username === undefined)
     return Promise.reject({
       status: 400,
