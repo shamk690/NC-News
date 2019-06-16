@@ -96,7 +96,6 @@ describe("/", () => {
               "author",
               "created_at"
             );
-            //console.log(res.body.articles[0]);
           });
       });
       it("when given the query limit = 5 responds with the 5 articles per page", () => {
@@ -176,7 +175,7 @@ describe("/", () => {
           .get("/api/articles/2/comments")
           .expect(200)
           .then(res => {
-            console.log(res.body.comments);
+
             expect(res.body.comments).to.be.an("array");
             expect(res.body.comments).to.eql([]);
           });
@@ -196,7 +195,7 @@ describe("/", () => {
           .get("/api/articles/1/comments")
           .expect(200)
           .then(res => {
-            //   console.log(res.body.comments);
+
             expect(res.body.comments).to.be.descendingBy("created_at");
           });
       });
@@ -224,14 +223,7 @@ describe("/", () => {
             expect(res.body.comments).to.be.descendingBy("author");
           });
       });
-      // it("articles can be sorted by body specified as url sort_by query", () => {
-      //   return request
-      //     .get("/api/articles/1/comments?sort_by=body")
-      //     .expect(200)
-      //     .then(res => {
-      //       expect(res.body.comments).to.be.descendingBy("body");
-      //     });
-      // });
+     
       it("GET status:200 articles can be sorted by column specified as url sort_by query", () => {
         return request
           .get("/api/articles/1/comments?sort_by=votes&order=asc")
@@ -275,7 +267,6 @@ describe("/", () => {
             expect(res.body.articles.length).to.equal(1);
           });
       });
-      ////////error testing for query where topic does not exists
       it("GET status: 404 when topic does not exists", () => {
         return request
           .get("/api/articles?topic=not-an-author")
@@ -565,7 +556,6 @@ describe("/", () => {
           })
           .expect(201)
           .then(({ body }) => {
-            //author: "icellusedkars",
             expect(body.article.author).to.eql("icellusedkars");
             expect(body.article.body).to.eql("sending new article");
             expect(body.article.topic).to.eql("mitch");

@@ -3,7 +3,7 @@ const endPointsDetails = () => {
     "GET/api": {
       description: "servers all available endpoints in json format"
     },
-    "get/api/topics": {
+    "GET/api/topics": {
       description: "servers array of topics",
       queryies: [],
       exampleResponse: {
@@ -23,7 +23,7 @@ const endPointsDetails = () => {
         ]
       }
     },
-    "get/api/articles": {
+    "GET/api/articles": {
       description:
         "serves an array of all articles by default limit to 10, default sorted by date descending order",
       queries: ["sort_by", "order", "author", "topic", "limit", "p"],
@@ -43,7 +43,7 @@ const endPointsDetails = () => {
         ]
       }
     },
-    "get/api/articles/:artcle_id": {
+    "GET/api/articles/:artcle_id": {
       description: "responses with a single article object",
       queryes: [],
       exampleResponse: {
@@ -60,7 +60,7 @@ const endPointsDetails = () => {
         }
       }
     },
-    "    PATCH /api/articles/:article_id": {
+    "PATCH /api/articles/:article_id": {
       description: "increment OR derement the votes for given articles_id",
       RequestBodyAccepts:
         "an object in the form { inc_votes: newVote } newVote will indicate how much the votes property in the database should be updated by",
@@ -123,7 +123,7 @@ const endPointsDetails = () => {
         }
       }
     },
-    " DELETE /api/comments/:comment_id": {
+    "DELETE /api/comments/:comment_id": {
       description: "Deletes the comment by coment_id",
       exampleResponse: { status: 204 }
     },
@@ -171,6 +171,8 @@ const endPointsDetails = () => {
       },
       "GET /api/users": {
         description: "Response with all the users in the database",
+        queries: [],
+
         exampleResponse: {
           0: {
             username: "tickle122",
