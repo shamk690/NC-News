@@ -138,6 +138,7 @@ POST /api/users GET /api/users
 
 All of the endpoints send the responses with in an object, with key name of what is being sent for example:
 
+```js
 {
 
 topics: [
@@ -185,5 +186,6 @@ description: &quot;Hello There&quot;
 ]
 
 }
+```
 
 Author: Shamila Asif
