@@ -1,6 +1,6 @@
 **Summary**
 
-Northcoders News API (Backend) API is hosted on Heroku.
+## Northcoders News API (Backend) API
 
 This repository is a backend for a full stack Northcoders News website which is built using Restful API. Database is built using PSQL database and is being interacted using KNEX.JS. The end points of this API enable users to read and post articles. Users can also vote on a specific article or delete article if owned by the them. A user can also see current users and view articles based on specific author. Articles are based on different topics which can be added or viewed. View API and route description is available at:
 
